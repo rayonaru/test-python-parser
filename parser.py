@@ -21,23 +21,21 @@ while True:
         response = soup(request.content, 'html.parser')
 
         photoUrl = response.select('.desktop img')[0]['src']
-        print(photoUrl)
-
         photo = requests.get('https://www.proplan.ru' + str(photoUrl), stream = True)
 
         with open('photos/' + photoUrl.split("/")[-1],'wb') as f:
             shutil.copyfileobj(photo.raw, f)
 
-        infotable = response.select('.info-table > tbody > tr')
-        name = ''
+        name = response.select('.desktop img')[0]['alt']
         height = ''
         weigth = ''
         purpose = ''
-        row = ';'
+        infotable = response.select('.info-table > tbody > tr')
+
         for info in infotable:
             data = info.select('td')
-            if data[0].text.find('Название породы') != -1:
-               name = data[1].text.replace('\n\n', '').replace('\n', '')
+            # if data[0].text.find('Название породы') != -1:
+            #    name = data[1].text.replace('\n\n', '').replace('\n', '')
             if data[0].text.find('Рост') != -1:
                height = data[1].text.replace('\n\n', '').replace('\n', '')
             if data[0].text.find('Вес') != -1:
@@ -45,9 +43,9 @@ while True:
             if data[0].text.find('Тип породы') != -1:
                purpose = data[1].text.replace('\n\n', '').replace('\n', '')
 
-        if (name != ''):
-            temp = [name, height, weigth, purpose]
-            result.append(temp)
+        # if (name != ''):
+        temp = [name, height, weigth, purpose]
+        result.append(temp)
 
     page+=1
 
